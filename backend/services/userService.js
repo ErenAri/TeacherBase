@@ -33,6 +33,21 @@ router.post("/login",async(request,response)=>{
     return response.Status(200).send({token})
 })
 
-var user ={router}
+var user ={router,checkAuthenticated:(request,response,next)=>{
+    console.log("...")
+    if(request.header("authorization")){
+        return response.status(401).send(
+        {
+            message:"Unauthorizated.No authorization header"
+        })
+    }
+
+    var token = request.header("authorization").split(" ")[1]
+    var payload = jwt.decode(token,"12345")
+    if(!payload){
+        return response.status(401).send({message:"Unauthorized invalid token"})
+    }
+    next
+}}
 
 module.exports = author
